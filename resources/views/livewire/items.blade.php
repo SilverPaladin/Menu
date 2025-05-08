@@ -122,12 +122,12 @@ new class extends Component {
 
 <div class="relative" x-data="{ show: @entangle('showEditModal') }">
     <!-- Main item list display -->
-    <div class="flex flex-col gap-2 text-[{{ $collection->font_size }}px] text-center" x-data="{ showHover: false }"
+    <div class="flex flex-col gap-1 text-[{{ $collection->font_size }}px] text-center" x-data="{ showHover: false }"
         @mouseover="showHover = true" @mouseleave="showHover = false" wire:poll.5s="refreshItems">
         @forelse($items->where('active', true) as $item)
             <p class="cursor-pointer hover:font-bold" wire:click="toggleActive({{ $item->id }})">{{ $item->name }}</p>
         @empty
-            <p>No items found</p>
+            <p>Out of Stock</p>
         @endforelse
 
         <!-- Hover edit button -->
