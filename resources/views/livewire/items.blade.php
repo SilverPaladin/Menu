@@ -28,7 +28,7 @@ new class extends Component {
 
     public function refreshItems()
     {
-        $this->items = Item::where('collection_id', $this->collection->id)->get();
+        $this->items = Item::orderBy('name')->where('collection_id', $this->collection->id)->get();
     }
 
     public function openEditModal()
