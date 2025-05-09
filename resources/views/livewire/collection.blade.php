@@ -115,6 +115,6 @@ x-data="{ showEditCollectionModal: $wire.entangle('showEditCollectionModal'), sh
     <div x-show="showHover" class="absolute bottom-0 p-2 bg-gray-800 bg-opacity-75 cursor-pointer">
         <flux:button wire:click="increaseFontSize">Increase Font Size</flux:button>
         <flux:button wire:click="decreaseFontSize">Decrease Font Size</flux:button>
-        <flux:button class="bottom-0" wire:click="deleteColumn({{ $column->id }})">Delete Column {{$column->name}}</flux:button>
+        <flux:button wire:confirm="Are you sure you want to delete this column?" class="bottom-0" wire:click="deleteColumn({{ $column->id }})">Delete Column {{$column->name}}</flux:button>
     </div>
 </div>
