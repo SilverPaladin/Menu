@@ -6,6 +6,7 @@ use App\Models\Column;
 use App\Models\Collection;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\On;
 
 new class extends Component {
     use WithFileUploads;
@@ -32,8 +33,9 @@ new class extends Component {
         $this->refreshColumns();
     }
 
+    #[On('column-reset')]
     public function refreshColumns()
-    {
+    {   
         unset($this->columns);
         $this->columns = Column::where('screen_id', $this->screen->id)->get();
         if ($this->columns->count() == 0) {
@@ -141,7 +143,7 @@ new class extends Component {
     <div class="w-full flex justify-center h-full gap-6">
         @foreach ($columns as $column)
             @if ($column->collection !== null)
-                <livewire:collection :collection="$column->collection" wire:key="collection-{{ $column->id }}" />
+                <livewire:collection :$column wire:key="collection-{{ $column->id }}" />
             @else
                 <div class="flex-1 flex flex-col gap-2 mx-auto items-center justify-center">
                     <h2 class="text-2xl font-bold mb-6 text-center">Select A Collection</h2>

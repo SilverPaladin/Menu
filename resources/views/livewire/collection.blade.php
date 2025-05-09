@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Collection;
+use App\Models\Column;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
@@ -11,7 +11,7 @@ new class extends Component {
     use WithFileUploads;
 
     public $collection;
-
+    public $column;
     #[Validate('required|string|max:255')]
     public string $name;
     #[Validate('nullable|string|max:255')]
@@ -29,9 +29,10 @@ new class extends Component {
     public $showEditCollectionModal;
     
 
-    public function mount(Collection $collection)
+    public function mount(Column $column)
     {
-        $this->collection = $collection;
+        $this->column = $column;
+        $this->collection = $column->collection;
         $this->name = $this->collection->name;
         $this->puff_count = $this->collection->puff_count;
         $this->volume = $this->collection->volume;
@@ -71,7 +72,11 @@ new class extends Component {
             'font_size' => $this->font_size,
         ]);
     }
-
+    public function deleteColumn($column_id)
+    {
+        Column::destroy($column_id);
+        return redirect(request()->header('Referer'));
+    }
 
 }; ?>
 
@@ -110,5 +115,6 @@ x-data="{ showEditCollectionModal: $wire.entangle('showEditCollectionModal'), sh
     <div x-show="showHover" class="absolute bottom-0 p-2 bg-gray-800 bg-opacity-75 cursor-pointer">
         <flux:button wire:click="increaseFontSize">Increase Font Size</flux:button>
         <flux:button wire:click="decreaseFontSize">Decrease Font Size</flux:button>
+        <flux:button class="bottom-0" wire:click="deleteColumn({{ $column->id }})">Delete Column {{$column->name}}</flux:button>
     </div>
 </div>

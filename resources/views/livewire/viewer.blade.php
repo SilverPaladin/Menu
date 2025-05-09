@@ -4,11 +4,13 @@ use Livewire\Volt\Component;
 use App\Models\Screen;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
+use Livewire\Attributes\Url;
 
 new class extends Component {
     public $screens;
     #[Validate('required|string|max:255')]
     public $name;
+    #[Url]
     public $screen = null;
 
     public function mount()
