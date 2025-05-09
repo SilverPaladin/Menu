@@ -120,7 +120,7 @@ new class extends Component {
 <!-- Selected Screen Display -->
 <main class="flex w-full gap-8 p-4 h-dvh" x-data="{ showAddColumnModal: $wire.entangle('showAddColumnModal'), showAddCollectionModal: $wire.entangle('showAddCollectionModal') }">
     <header
-        class="group overflow-hidden transition-all duration-300 ease-in-out h-10 hover:h-16 bg-transparent hover:bg-gray-800 opacity-10 hover:opacity-100 fixed top-0 left-0 right-0 z-50">
+        class="group overflow-hidden transition-all duration-300 ease-in-out h-10 hover:h-16 bg-transparent hover:bg-gray-800 opacity-0 hover:opacity-100 fixed top-0 left-0 right-0 z-50">
         <div
             class="max-w-7xl mx-auto py-1 group-hover:py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center transition-all duration-300">
             <div
@@ -140,7 +140,7 @@ new class extends Component {
         </div>
     </header>
 
-    <div class="w-full flex justify-center h-full gap-6">
+    <div class="w-full flex justify-center h-full gap-6" wire:poll="refreshColumns">
         @foreach ($columns as $column)
             @if ($column->collection !== null)
                 <livewire:collection :$column wire:key="collection-{{ $column->id }}" />
