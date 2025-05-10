@@ -49,7 +49,7 @@ new class extends Component {
 }; ?>
 
 <div
-    class="h-dvh flex items-center justify-center w-full">
+    class="h-dvh flex items-center justify-center w-full text-gray-100 bg-black">
     @if (!$screen)
         <!-- Screen Selection Interface -->
         <main class="flex w-full gap-8 p-4 justify-center flex-col">
