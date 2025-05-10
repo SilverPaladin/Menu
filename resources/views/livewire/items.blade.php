@@ -127,9 +127,8 @@ new class extends Component {
         @forelse($items->where('active', true) as $item)
             <p class="cursor-pointer hover:font-bold" wire:click="toggleActive({{ $item->id }})">{{ $item->name }}</p>
         @empty
-            <p>Out of Stock</p>
+            <p class="text-red-500 text-2xl font-bold">Out of Stock</p>
         @endforelse
-
         <!-- Hover edit button -->
         <div x-show="showHover" class="absolute top-0 right-0 p-2 bg-gray-800 bg-opacity-75 rounded-bl-lg cursor-pointer"
             wire:click="openEditModal">
