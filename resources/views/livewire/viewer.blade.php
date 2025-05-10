@@ -12,10 +12,16 @@ new class extends Component {
     public $name;
     #[Url]
     public $screen = null;
+    public $errorMessage = null;
 
     public function mount()
     {
         $this->screens = Screen::orderBy('name')->get();
+        if($this->screen && !Screen::find($this->screen)){
+            $this->errorMessage = "Screen with ID {$this->screen} was not found.";
+            $this->resetScreen();
+        }
+
     }
 
     #[On('screen-reset')]
@@ -46,7 +52,13 @@ new class extends Component {
     class="h-dvh flex items-center justify-center w-full">
     @if (!$screen)
         <!-- Screen Selection Interface -->
-        <main class="flex w-full gap-8 p-4 justify-center">
+        <main class="flex w-full gap-8 p-4 justify-center flex-col">
+            @if ($errorMessage)
+                <div class="bg-red-500 text-white p-4 rounded-lg mb-4 text-center">
+                    {{ $errorMessage }}
+                </div>
+            @endif
+            <div class="flex w-full gap-8 justify-center">
 
 
             @foreach ($screens as $scr)
@@ -61,6 +73,7 @@ new class extends Component {
                 <h2 class="text-2xl font-bold mb-6 text-center">Add Screen</h2>
                 <flux:input wire:model="name" label="Screen Name" description="Used to choose the screen." />
                 <flux:button wire:click="createScreen" wire:loading.attr="disabled">Submit</flux:button>
+            </div>
             </div>
         </main>
     @else

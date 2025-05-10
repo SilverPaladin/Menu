@@ -96,16 +96,16 @@ new class extends Component {
     }
 }; ?>
 
-<div class="flex-1 h-full" hover:cursor-pointer @mouseover="showHover = true"
-    @mouseleave="showHover = false" x-data="{ showEditCollectionModal: $wire.entangle('showEditCollectionModal'), showHover: false }">
+<div class="flex-1 h-full" x-data="{ showEditCollectionModal: $wire.entangle('showEditCollectionModal'), showHover: false }">
     <div class="flex flex-col gap-4 text-center h-full">
         <img class="w-64 mx-auto" src="{{ Storage::url($collection->image) }}" alt="{{ $collection->name }}"
-            title="Click to edit collection" @click="showEditCollectionModal = true">
+            title="hover on bottom screen to show options" @click="showEditCollectionModal = true">
         <h2 class="text-4xl font-bold">{{ $collection->puff_count }}</h2>
         <h3 class="text-3xl font-bold">{{ $collection->volume }}</h3>
         <div class="flex-1">
             <livewire:items :$collection :$font_size />
         </div>
+        <div class="h-10" hover:cursor-pointer @mouseover="showHover = true" @mouseleave="showHover = false">
         <div x-show="showHover" class="gap-2 flex justify-center p-2 bg-green-800">
             <flux:button wire:confirm="Are you sure you want to delete this column?" class="bottom-0"
                 wire:click="deleteColumn({{ $column->id }})">Delete Column {{ $column->name }}</flux:button>
@@ -113,7 +113,7 @@ new class extends Component {
             <flux:button wire:click="increaseFontSize">Increase Font Size</flux:button>
             <flux:button wire:click="decreaseFontSize">Decrease Font Size</flux:button>
         </div>
-
+    </div>
     </div>
 
     <!-- Collection Editing Modal -->
