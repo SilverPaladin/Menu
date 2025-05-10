@@ -130,7 +130,7 @@ new class extends Component {
             <p class="text-red-500 text-2xl font-bold">Out of Stock</p>
         @endforelse
         <!-- Hover edit button -->
-        <div x-show="showHover" class="absolute top-0 right-0 p-2 bg-gray-800 bg-opacity-75 rounded-bl-lg cursor-pointer"
+        <div x-show="showHover" class="absolute bottom-0 right-0 p-2 bg-gray-800 bg-opacity-75 rounded-bl-lg cursor-pointer"
             wire:click="openEditModal">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">

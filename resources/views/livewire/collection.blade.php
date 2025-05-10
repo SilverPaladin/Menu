@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Column;
+use App\Models\Collection;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
@@ -26,16 +27,25 @@ new class extends Component {
     public ?string $volume;
     #[Validate('nullable|integer')]
     public $font_size;
-    public $showEditCollectionModal;
+    #[Validate('nullable|integer')]
+    public $collection_id;
+    public $collections;
+    public $showEditCollectionModal = false;
 
     public function mount(Column $column)
     {
+        $this->init($column);
+    }   
+
+    public function init(Column $column){
         $this->column = $column;
         $this->collection = $column->collection;
+        $this->collection_id = $this->collection->id;
         $this->name = $this->collection->name;
         $this->puff_count = $this->collection->puff_count;
         $this->volume = $this->collection->volume;
         $this->font_size = $this->collection->font_size;
+        $this->collections = Collection::orderBy('name')->get();
     }
 
     public function updateCollection()
@@ -76,9 +86,17 @@ new class extends Component {
         Column::destroy($column_id);
         return redirect(request()->header('Referer'));
     }
+    public function changeCollection()
+    {
+        $this->column->update([
+            'collection_id' => $this->collection_id,
+        ]);
+        $this->init($this->column);
+        $this->showEditCollectionModal = false;
+    }
 }; ?>
 
-<div class="flex-1 h-full hover:bg-gray-800" hover:cursor-pointer @mouseover="showHover = true"
+<div class="flex-1 h-full" hover:cursor-pointer @mouseover="showHover = true"
     @mouseleave="showHover = false" x-data="{ showEditCollectionModal: $wire.entangle('showEditCollectionModal'), showHover: false }">
     <div class="flex flex-col gap-4 text-center h-full">
         <img class="w-64 mx-auto" src="{{ Storage::url($collection->image) }}" alt="{{ $collection->name }}"
@@ -91,6 +109,7 @@ new class extends Component {
         <div x-show="showHover" class="gap-2 flex justify-center p-2 bg-green-800">
             <flux:button wire:confirm="Are you sure you want to delete this column?" class="bottom-0"
                 wire:click="deleteColumn({{ $column->id }})">Delete Column {{ $column->name }}</flux:button>
+            <flux:button @click="showEditCollectionModal = true">Edit Collection</flux:button>
             <flux:button wire:click="increaseFontSize">Increase Font Size</flux:button>
             <flux:button wire:click="decreaseFontSize">Decrease Font Size</flux:button>
         </div>
@@ -102,6 +121,12 @@ new class extends Component {
         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6 flex flex-col gap-4"
             x-on:click.outside="showEditCollectionModal = false">
+            <flux:select wire:model="collection_id" label="Change Collection" description="Select Collection">
+                @foreach ($collections as $collection)
+                    <option value="{{ $collection->id }}">{{ $collection->name }}</option>
+                @endforeach
+            </flux:select>
+            <flux:button wire:click="changeCollection">Change Collection</flux:button>
             <h3 class="text-xl font-bold text-white mb-4">Edit Collection</h3>
             <flux:input type="file" wire:model="image" label="Header Image"
                 description="Select image to replace Column Header Image" />
