@@ -3,9 +3,22 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::view('/', 'welcome')->name('home');
+
+Volt::route('viewer','viewer')->name('view');
+Volt::route('screens/{screen}','editscreen')->name('screens');
+Volt::route('collections/{collection}','editcollection')->name('collections');
+
+Route::view('dashboard', 'dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+Route::middleware(['auth'])->group(function () {
+    Route::redirect('settings', 'settings/profile');
+
+    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
+    Volt::route('settings/password', 'settings.password')->name('settings.password');
+    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-Volt::route('editor','editor')->name('edit');
-Volt::route('viewer','viewer')->name('view');
+require __DIR__.'/auth.php';

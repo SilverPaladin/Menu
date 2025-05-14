@@ -5,8 +5,9 @@ use App\Models\Screen;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\Url;
+use Livewire\Attributes\Layout;
 
-new class extends Component {
+new #[Layout('components.layouts.app.viewer')] class extends Component {
     public $screens;
     #[Validate('required|string|max:255')]
     public $name;
@@ -70,6 +71,7 @@ new class extends Component {
 
             <!-- Add Screen Panel -->
             <div class="margin-auto max-w-1/4 flex-1 text-lg p-6 bg-zinc-900 rounded-lg flex flex-col gap-4">
+                <a class="text-center text-white font-bold border p-2 rounded-lg" href="{{ route('dashboard')}}">Visit Dashboard</a>
                 <h2 class="text-2xl font-bold mb-6 text-center">Add Screen</h2>
                 <flux:input wire:model="name" label="Screen Name" description="Used to choose the screen." />
                 <flux:button wire:click="createScreen" wire:loading.attr="disabled">Submit</flux:button>
