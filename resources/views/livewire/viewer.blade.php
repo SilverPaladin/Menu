@@ -50,7 +50,23 @@ new #[Layout('components.layouts.app.viewer')] class extends Component {
 }; ?>
 
 <div
-    class="h-dvh flex items-center justify-center w-full text-gray-100 bg-black">
+    class="h-dvh flex items-center justify-center w-full text-gray-100 bg-black"
+    x-data="{ 
+        isFullScreen: false,
+        toggleFullScreen() { 
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message}`);
+                });
+                this.isFullScreen = true;
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    this.isFullScreen = false;
+                }
+            }
+        }
+    }">
     @if (!$screen)
         <!-- Screen Selection Interface -->
         <main class="flex w-full gap-8 p-4 justify-center flex-col">
@@ -74,8 +90,8 @@ new #[Layout('components.layouts.app.viewer')] class extends Component {
                 <a class="text-center text-white font-bold border p-2 rounded-lg" href="{{ route('dashboard')}}">Visit Dashboard</a>
                 <h2 class="text-2xl font-bold mb-6 text-center">Add Screen</h2>
                 <flux:input wire:model="name" label="Screen Name" description="Used to choose the screen." />
-                <flux:button wire:click="createScreen" wire:loading.attr="disabled">Submit</flux:button>
-            </div>
+                <flux:button wire:click="createScreen">Submit</flux:button>
+                <flux:button @click="toggleFullScreen()" x-text="isFullScreen ? 'Exit Full Screen' : 'Go Full Screen'">Go Full Screen</flux:button>
             </div>
         </main>
     @else

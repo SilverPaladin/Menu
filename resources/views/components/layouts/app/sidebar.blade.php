@@ -16,7 +16,7 @@
             <flux:spacer />
 
             <flux:navlist variant="outline">
-                <flux:navlist.item icon="book-open-text" :href="route('view')" :current="request()->routeIs('view')" wire:navigate>{{ __('Viewer') }}</flux:navlist.item>
+                <flux:navlist.item icon="book-open-text" :href="route('viewer')" :current="request()->routeIs('view')" wire:navigate>{{ __('Viewer') }}</flux:navlist.item>
             </flux:navlist>
 
             <!-- Desktop User Menu -->

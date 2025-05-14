@@ -144,35 +144,25 @@ new class extends Component {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-                    <input type="text" id="name" wire:model="name" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                    @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <flux:input type="text" label="Name" wire:model="name" />
                 </div>
                 
                 <div class="mb-4">
-                    <label for="puff_count" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Puff Count</label>
-                    <input type="text" id="puff_count" wire:model="puff_count" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                    @error('puff_count') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <flux:input type="text" label="Puff Count" wire:model="puff_count" />
                 </div>
                 
                 <div class="mb-4">
-                    <label for="volume" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Volume</label>
-                    <input type="text" id="volume" wire:model="volume" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                    @error('volume') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <flux:input type="text" label="Volume" wire:model="volume" />
                 </div>
                 
                 <div class="mb-4">
-                    <label for="font_size" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Font Size</label>
-                    <input type="number" id="font_size" wire:model="font_size" min="8" max="72" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                    @error('font_size') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <flux:input type="number" label="Font Size" wire:model="font_size" min="8" max="72" />
                 </div>
             </div>
             
             <div>
                 <div class="mb-4">
-                    <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Header Image</label>
-                    <input type="file" id="image" wire:model="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-gray-700 dark:file:text-gray-200">
-                    @error('image') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <flux:input type="file" label="Header Image" wire:model="image" accept="image/*" />
                     
                     <div wire:loading wire:target="image" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                         Uploading...
@@ -194,9 +184,7 @@ new class extends Component {
         </div>
         
         <div class="flex justify-end mt-4">
-            <button wire:click="saveCollection" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                Save Collection
-            </button>
+            <flux:button variant="primary" wire:click="saveCollection">Save Collection</flux:button>
         </div>
     </div>
     
@@ -207,10 +195,8 @@ new class extends Component {
         <!-- Add New Item Form -->
         <div class="mb-6">
             <div class="flex items-center">
-                <input type="text" wire:model="newItemName" placeholder="Enter new item name" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full">
-                <button wire:click="addItem" class="ml-2 inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                    Add Item
-                </button>
+                <flux:input type="text" wire:model="newItemName" placeholder="Enter new item name" />
+                <flux:button variant="primary" wire:click="addItem" class="ml-2">Add Item</flux:button>
             </div>
             @error('newItemName') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
@@ -231,31 +217,23 @@ new class extends Component {
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                                 @if ($editItemId === $item->id)
                                     <div class="flex items-center">
-                                        <input type="text" wire:model="editItemName" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full">
-                                        <button wire:click="saveItem" class="ml-2 inline-flex items-center px-2 py-1 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                            Save
-                                        </button>
-                                        <button wire:click="cancelEditItem" class="ml-2 inline-flex items-center px-2 py-1 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                            Cancel
-                                        </button>
+                                        <flux:input type="text" wire:model="editItemName" />
+                                        <flux:button variant="primary" wire:click="saveItem" class="ml-2">Save</flux:button>
+                                        <flux:button variant="ghost" wire:click="cancelEditItem" class="ml-2">Cancel</flux:button>
                                     </div>
                                 @else
                                     {{ $item->name }}
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                <button wire:click="toggleItemStatus({{ $item->id }})" class="{{ $item->active ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' }} inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                                <flux:button variant="{{ $item->active ? 'primary' : 'subtle' }}" wire:click="toggleItemStatus({{ $item->id }})">
                                     {{ $item->active ? 'Active' : 'Hidden' }}
-                                </button>
+                                </flux:button>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 @if ($editItemId !== $item->id)
-                                    <button wire:click="startEditItem({{ $item->id }})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-3">
-                                        Edit
-                                    </button>
-                                    <button wire:click="deleteItem({{ $item->id }})" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300" onclick="return confirm('Are you sure you want to delete this item?')">
-                                        Delete
-                                    </button>
+                                    <flux:button variant="ghost" wire:click="startEditItem({{ $item->id }})" class="mr-3">Edit</flux:button>
+                                    <flux:button variant="danger" wire:click="deleteItem({{ $item->id }})" onclick="return confirm('Are you sure you want to delete this item?')">Delete</flux:button>
                                 @endif
                             </td>
                         </tr>
@@ -272,8 +250,6 @@ new class extends Component {
     </div>
     
     <div class="mt-6">
-        <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-            Back to Dashboard
-        </a>
+        <flux:button variant="ghost" href="{{ route('dashboard') }}">Back to Dashboard</flux:button>
     </div>
 </div>
