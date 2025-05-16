@@ -46,7 +46,7 @@ new class extends Component {
             'puff_count' => 'nullable|string',
             'volume' => 'nullable|string',
             'font_size' => 'nullable|integer|min:8|max:72',
-            'image' => 'nullable|image|max:1024', // 1MB Max
+            'image' => 'nullable|image|max:102400', // 100MB Max
         ]);
         
         $data = [
