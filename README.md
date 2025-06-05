@@ -21,9 +21,9 @@ A Laravel-powered web application for creating, organizing, and publishing digit
 ## Installation
 1. **Clone & prepare**
    ```bash
-   git clone https://github.com/your-org/menu.git
+   git clone https://github.com/SilverPaladin/Menu.git
    cd menu
-   cp .env.example .env        # adjust DB credentials
+   cp .env.example .env        # adjust DB credentials, or use sqlite with default settings
    ```
 2. **Install PHP dependencies**
    ```bash
@@ -46,7 +46,7 @@ A Laravel-powered web application for creating, organizing, and publishing digit
    – or point your local DevStack (Laragon/Valet) at `public/` and add the host `menu.test` to your hosts file.
 
 ## Usage
-Log in with the generated admin credentials (see seeder output) and start adding **Screens**, then **Collections**, **Columns**, and **Items**. Content appears instantly without page refresh thanks to Livewire.
+Create account, log in, and start adding **Screens**, then **Collections**, **Columns**, and **Items**. Content appears instantly without page refresh thanks to Livewire.
 
 ## Contributing
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.

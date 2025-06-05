@@ -20,6 +20,17 @@
     class="bg-black text-gray-100 flex items-center justify-center min-h-screen flex-col">
     <livewire:viewer />
     <div x-cloak>
+        <span class="text-[10px]">10px</span>
+        <span class="text-[12px]">12px</span>
+        <span class="text-[14px]">14px</span>
+        <span class="text-[16px]">16px</span>
+        <span class="text-[18px]">18px</span>
+        <span class="text-[20px]">20px</span>
+        <span class="text-[22px]">22px</span>
+        <span class="text-[24px]">24px</span>
+        <span class="text-[26px]">26px</span>
+        <span class="text-[28px]">28px</span>
+        <span class="text-[30px]">30px</span>
         <span class="text-[32px]">32px</span>
         <span class="text-[34px]">34px</span>
         <span class="text-[36px]">36px</span>
