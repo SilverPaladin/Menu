@@ -25,7 +25,7 @@ new class extends Component {
     public ?string $puff_count;
     #[Validate('nullable|string|max:255')]
     public ?string $volume;
-    #[Validate('nullable|integer')]
+    #[Validate('nullable|integer|min:10|max:80|multiple_of:2')]
     public $font_size;
     #[Validate('nullable|integer')]
     public $collection_id;
@@ -139,8 +139,8 @@ new class extends Component {
             <flux:input wire:model="name" label="Collection Name" description="eg: Beast Mode Max" />
             <flux:input wire:model="puff_count" label="Puff Count" description="Number of Puffs. eg: 25,000 Puffs" />
             <flux:input wire:model="volume" label="Volume" description="Volume of the device. eg: 20ml" />
-            <flux:input type="number" wire:model="font_size" label="Font Size"
-                description="Font size of the collection" />
+            <flux:input type="number" wire:model="font_size" label="Font Size" 
+                description="Font size of the collection. Multiples of 2" />
             <flux:button wire:click="updateCollection">Submit</flux:button>
         </div>
     </div>
