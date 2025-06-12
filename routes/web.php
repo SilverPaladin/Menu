@@ -5,9 +5,9 @@ use Livewire\Volt\Volt;
 
 Route::view('/', 'welcome')->name('home');
 
-Volt::route('viewer','viewer')->name('viewer');
-Volt::route('screens/{screen}','editscreen')->name('screens');
-Volt::route('collections/{collection}','editcollection')->name('collections');
+Volt::route('viewer', 'viewer')->name('viewer');
+Volt::route('screens/{screen}', 'editscreen')->name('screens');
+Volt::route('collections/{collection}', 'editcollection')->name('collections');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\Collection;
+use App\Models\Screen;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Screen;
-use App\Models\Collection;
 
 return new class extends Migration
 {

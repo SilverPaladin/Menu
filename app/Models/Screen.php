@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Column; // added this line
+
+// added this line
 
 class Screen extends Model
 {
     protected $guarded = [];
+
     /**
      * Get the columns for the screen
      */
