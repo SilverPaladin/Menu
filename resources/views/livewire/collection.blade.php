@@ -101,7 +101,7 @@ new class extends Component {
         <img class="w-64 mx-auto" src="{{ Storage::url($collection->image) }}" alt="{{ $collection->name }}"
             title="hover on bottom screen to show options" @click="showEditCollectionModal = true">
         <h2 class="text-4xl font-bold">{{ $collection->puff_count }}</h2>
-        <h3 class="text-3xl font-bold">{{ $collection->volume }}</h3>
+        <h3 class="text-3xl font-bold">{!! $collection->volume !!}</h3>
         <div class="flex-1">
             <livewire:items :$collection :$font_size />
         </div>
