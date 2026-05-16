@@ -1,6 +1,6 @@
 <?php
 
-use Livewire\Volt\Component;
+use Livewire\Component;
 use App\Models\Collection;
 use App\Models\Item;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\Reactive;
-use Livewire\Volt\Component;
+use Livewire\Component;
 
 new class extends Component {
     use WithFileUploads;

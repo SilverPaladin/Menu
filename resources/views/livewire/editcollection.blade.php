@@ -2,7 +2,7 @@
 
 use App\Models\Collection;
 use App\Models\Item;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
 

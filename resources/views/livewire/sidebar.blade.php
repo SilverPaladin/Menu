@@ -1,6 +1,6 @@
 <?php
 
-use Livewire\Volt\Component;
+use Livewire\Component;
 use App\Models\Screen;
 use App\Models\Collection;
 use Livewire\Attributes\Validate;
