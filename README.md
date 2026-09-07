@@ -12,7 +12,7 @@ A Laravel-powered web application for creating, organizing, and publishing digit
 ## Tech Stack
 | Layer            | Technology |
 |------------------|------------|
-| Backend          | Laravel 11, PHP ≥8.2 |
+| Backend          | Laravel 13, PHP ≥8.4.1 with the committed dependency lockfile |
 | Realtime UI      | Livewire Volt |
 | UI Components    | FluxUI (Tailwind plugin) |
 | Styling / Build  | Tailwind CSS, Vite |
