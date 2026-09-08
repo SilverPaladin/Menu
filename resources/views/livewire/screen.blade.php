@@ -101,7 +101,7 @@ new class extends Component {
             'puff_count' => $this->puff_count,
             'volume' => $this->volume,
             'image' => $imagePath,
-            'image_name' => $this->image->getClientOriginalName(),
+            'image_name' => $this->image?->getClientOriginalName(),
             'font_size' => $this->font_size,
         ]);
 
@@ -133,7 +133,7 @@ new class extends Component {
         </div>
     </header>
 
-    <div class="w-full flex justify-center h-full gap-6" wire:poll.5s="refreshColumns">
+    <div class="w-full flex justify-center h-full gap-6">
         @foreach ($columns as $column)
             @if ($column->collection !== null)
                 <livewire:collection :$column wire:key="collection-{{ $column->id }}" />
@@ -173,7 +173,7 @@ new class extends Component {
                 <flux:input wire:model="volume" label="Volume" description="Volume of the device. eg: 20ml" />
                 <flux:input wire:model="font_size" label="Font Size" description="Font size of the collection" />
                 <flux:input wire:model="image" label="Image" description="Collection Header Image" type="file"
-                    accept="image/*" />
+                    accept="image/*"  />
                 @if($image)
                     <div class="mt-2">
                         <img src="{{ $image->temporaryUrl() }}" class="h-32 w-auto rounded-md" />
@@ -183,7 +183,7 @@ new class extends Component {
                     <flux:modal.close>
                         <flux:button variant="ghost">Close</flux:button>
                     </flux:modal.close>
-                    <flux:button type="submit" wire:loading.attr="disabled">Submit</flux:button>
+                    <flux:button type="submit">Submit</flux:button>
                 </div>
             </form>
         </flux:modal>
