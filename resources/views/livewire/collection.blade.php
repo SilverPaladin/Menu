@@ -103,7 +103,7 @@ new class extends Component {
         <h2 class="text-4xl font-bold">{{ $collection->puff_count }}</h2>
         <h3 class="text-3xl font-bold">{!! $collection->volume !!}</h3>
         <div class="flex-1">
-            <livewire:items :$collection :$font_size />
+            <livewire:items :$collection :$font_size wire:key="items-{{ $collection->id }}" />
         </div>
         <div class="h-10" hover:cursor-pointer @mouseover="showHover = true" @mouseleave="showHover = false">
         <div x-show="showHover" class="gap-2 flex justify-center p-2 bg-green-800">
