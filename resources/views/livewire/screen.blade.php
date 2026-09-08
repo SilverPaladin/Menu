@@ -14,10 +14,8 @@ new class extends Component {
     public $columns;
     #[Validate('required|string|max:255')]
     public $name;
-    public $showAddColumnModal = false;
     public $column_id;
     public $selectedCollectionId;
-    public $showAddCollectionModal = false;
     #[Validate('nullable|string|max:255')]
     public $puff_count;
     #[Validate('nullable|string|max:255')]
@@ -33,13 +31,12 @@ new class extends Component {
         $this->refreshColumns();
     }
 
-    #[On('column-reset')]
     public function refreshColumns()
     {   
         unset($this->columns);
         $this->columns = Column::where('screen_id', $this->screen->id)->get();
         if ($this->columns->count() == 0) {
-            $this->showAddColumnModal = true;
+            Flux::modal('add-column')->show();
         }
     }
 
@@ -60,15 +57,13 @@ new class extends Component {
             'name' => $this->name,
             'screen_id' => $this->screen->id,
         ]);
-        $this->refreshColumns();
         $this->reset(['name']);
-        $this->showAddColumnModal = false;
+        Flux::modal('add-column')->close();
     }
 
     public function deleteColumn($column_id)
     {
         Column::destroy($column_id);
-        $this->refreshColumns();
     }
 
     public function selectCollection($column_id, $collection_id)
@@ -77,7 +72,6 @@ new class extends Component {
             ->update([
                 'collection_id' => $collection_id,
             ]);
-        $this->refreshColumns();
     }
 
     public function with()
@@ -90,7 +84,7 @@ new class extends Component {
     public function addCollectionModal($column_id)
     {
         $this->column_id = $column_id;
-        $this->showAddCollectionModal = true;
+        Flux::modal('add-collection')->show();
     }
 
     public function addCollection()
@@ -112,13 +106,13 @@ new class extends Component {
         ]);
 
         $this->selectCollection($this->column_id, $collection->id);
-        $this->showAddCollectionModal = false;
+        Flux::modal('add-collection')->close();
     }
 };
 ?>
 
 <!-- Selected Screen Display -->
-<main class="flex w-full gap-8 p-4 h-dvh" x-data="{ showAddColumnModal: $wire.entangle('showAddColumnModal'), showAddCollectionModal: $wire.entangle('showAddCollectionModal') }">
+<main class="flex w-full gap-8 p-4 h-dvh">
     <header
         class="group overflow-hidden transition-all duration-300 ease-in-out h-10 hover:h-16 bg-transparent hover:bg-gray-800 opacity-0 hover:opacity-100 fixed top-0 left-0 right-0 z-50">
         <div
@@ -129,18 +123,17 @@ new class extends Component {
                     <flux:button variant="danger" wire:confirm="Are you sure you want to delete this screen?" wire:click="deleteScreen">Delete {{ $screen->name }} screen</flux:button>
                 </h2>
             </div>
-            <button @click="showAddColumnModal = true"
-                class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm">
-                Add Column
-            </button>
-            <button wire:click="backToScreens"
+            <flux:modal.trigger name="add-column">
+                <flux:button variant="primary" size="sm">Add Column</flux:button>
+            </flux:modal.trigger>
+            <a href="{{ route('viewer') }}"
                 class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Back to Screens
-            </button>
+            </a>
         </div>
     </header>
 
-    <div class="w-full flex justify-center h-full gap-6" wire:poll="refreshColumns">
+    <div class="w-full flex justify-center h-full gap-6" wire:poll.5s="refreshColumns">
         @foreach ($columns as $column)
             @if ($column->collection !== null)
                 <livewire:collection :$column wire:key="collection-{{ $column->id }}" />
@@ -158,51 +151,41 @@ new class extends Component {
                 </div>
             @endif
         @endforeach
-        <div x-show="showAddColumnModal" 
-            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex flex-col items-center justify-center p-4">
-            <div class="max-w-md w-full bg-gray-800 p-6 rounded-lg">
-                <div class="flex justify-between">
-                    <div class="font-bold text-white mb-4">Add New Column</div>
-                    <button @click="showAddColumnModal = false"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Close
-                    </button>
+        <flux:modal name="add-column" class="max-w-md">
+            <form wire:submit.prevent="addColumn" class="space-y-4">
+                <flux:heading size="lg">Add New Column</flux:heading>
+                <flux:input wire:model="name" label="Column Name" description="Used to choose the column." />
+                <div class="flex justify-end space-x-2">
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Close</flux:button>
+                    </flux:modal.close>
+                    <flux:button type="submit" wire:loading.attr="disabled">Submit</flux:button>
                 </div>
-                <!-- Add Column Panel -->
-                <div class="bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6 flex flex-col gap-4">
-                    <flux:input wire:model="name" label="Column Name" description="Used to choose the column." />
-                    <flux:button wire:click="addColumn" wire:loading.attr="disabled">Submit</flux:button>
+            </form>
+        </flux:modal>
+        <flux:modal name="add-collection" class="max-w-md">
+            <form wire:submit.prevent="addCollection" class="space-y-4">
+                <flux:heading size="lg">Add New Collection</flux:heading>
+                <flux:input wire:model="name" label="Collection Name"
+                    description="Used to choose the collection. eg: Beast Mode Max" />
+                <flux:input wire:model="puff_count" label="Puff Count"
+                    description="Number of Puffs. eg: 25,000 Puffs" />
+                <flux:input wire:model="volume" label="Volume" description="Volume of the device. eg: 20ml" />
+                <flux:input wire:model="font_size" label="Font Size" description="Font size of the collection" />
+                <flux:input wire:model="image" label="Image" description="Collection Header Image" type="file"
+                    accept="image/*" />
+                @if($image)
+                    <div class="mt-2">
+                        <img src="{{ $image->temporaryUrl() }}" class="h-32 w-auto rounded-md" />
+                    </div>
+                @endif
+                <div class="flex justify-end space-x-2">
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Close</flux:button>
+                    </flux:modal.close>
+                    <flux:button type="submit" wire:loading.attr="disabled">Submit</flux:button>
                 </div>
-            </div>
-        </div>
-        <div x-show="showAddCollectionModal" 
-            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex flex-col items-center justify-center p-4">
-            <div class="max-w-md w-full bg-gray-800 p-6 rounded-lg">
-                <div class="flex justify-between">
-                    <div class="font-bold text-white mb-4">Add New Collection</div>
-                    <button @click="showAddCollectionModal = false"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Close
-                    </button>
-                </div>
-                <!-- Add Collection Panel -->
-                <div class="bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6 flex flex-col gap-4">
-                    <flux:input wire:model="name" label="Collection Name"
-                        description="Used to choose the collection. eg: Beast Mode Max" />
-                    <flux:input wire:model="puff_count" label="Puff Count"
-                        description="Number of Puffs. eg: 25,000 Puffs" />
-                    <flux:input wire:model="volume" label="Volume" description="Volume of the device. eg: 20ml" />
-                    <flux:input wire:model="font_size" label="Font Size" description="Font size of the collection" />
-                    <flux:input wire:model="image" label="Image" description="Collection Header Image" type="file"
-                        accept="image/*" />
-                    @if($image)
-                        <div class="mt-2">
-                            <img src="{{ $image->temporaryUrl() }}" class="h-32 w-auto rounded-md" />
-                        </div>
-                        <flux:button wire:click="addCollection" wire:loading.attr="disabled">Submit</flux:button>
-                    @endif
-                </div>
-            </div>
-        </div>
+            </form>
+        </flux:modal>
     </div>
 </main>
