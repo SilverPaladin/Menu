@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\Reactive;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 new class extends Component {
@@ -25,7 +26,7 @@ new class extends Component {
     public ?string $puff_count;
     #[Validate('nullable|string|max:255')]
     public ?string $volume;
-    #[Validate('nullable|integer|min:10|max:80|multiple_of:2')]
+    #[Validate('nullable|integer|min:10|max:80')]
     public $font_size;
     #[Validate('nullable|integer')]
     public $collection_id;
@@ -35,9 +36,10 @@ new class extends Component {
     public function mount(Column $column)
     {
         $this->init($column);
-    }   
+    }
 
-    public function init(Column $column){
+    public function init(Column $column)
+    {
         $this->column = $column;
         $this->collection = $column->collection;
         $this->collection_id = $this->collection->id;
@@ -69,14 +71,14 @@ new class extends Component {
 
     public function increaseFontSize()
     {
-        $this->font_size = $this->font_size < 80 ? ($this->font_size += 2) : $this->font_size;
+        $this->font_size = $this->font_size < 80 ? ++$this->font_size : $this->font_size;
         $this->collection->update([
             'font_size' => $this->font_size,
         ]);
     }
     public function decreaseFontSize()
     {
-        $this->font_size = $this->font_size > 32 ? ($this->font_size -= 2) : $this->font_size;
+        $this->font_size = $this->font_size > 9 ? --$this->font_size : $this->font_size;
         $this->collection->update([
             'font_size' => $this->font_size,
         ]);
@@ -106,14 +108,14 @@ new class extends Component {
             <livewire:items :$collection :$font_size wire:key="items-{{ $collection->id }}" />
         </div>
         <div class="h-10" hover:cursor-pointer @mouseover="showHover = true" @mouseleave="showHover = false">
-        <div x-show="showHover" class="gap-2 flex justify-center p-2 bg-green-800">
-            <flux:button wire:confirm="Are you sure you want to delete this column?" class="bottom-0"
-                wire:click="deleteColumn({{ $column->id }})">Delete Column {{ $column->name }}</flux:button>
-            <flux:button @click="showEditCollectionModal = true">Edit Collection</flux:button>
-            <flux:button wire:click="increaseFontSize">Increase Font Size</flux:button>
-            <flux:button wire:click="decreaseFontSize">Decrease Font Size</flux:button>
+            <div x-show="showHover" class="gap-2 flex justify-center p-2 bg-green-800">
+                <flux:button wire:confirm="Are you sure you want to delete this column?" class="bottom-0"
+                    wire:click="deleteColumn({{ $column->id }})">Delete Column {{ $column->name }}</flux:button>
+                <flux:button @click="showEditCollectionModal = true">Edit Collection</flux:button>
+                <flux:button wire:click="decreaseFontSize">Decrease Font Size</flux:button>
+                <flux:button wire:click="increaseFontSize">Increase Font Size</flux:button>
+            </div>
         </div>
-    </div>
     </div>
 
     <!-- Collection Editing Modal -->
@@ -139,8 +141,8 @@ new class extends Component {
             <flux:input wire:model="name" label="Collection Name" description="eg: Beast Mode Max" />
             <flux:input wire:model="puff_count" label="Puff Count" description="Number of Puffs. eg: 25,000 Puffs" />
             <flux:input wire:model="volume" label="Volume" description="Volume of the device. eg: 20ml" />
-            <flux:input type="number" wire:model="font_size" label="Font Size" 
-                description="Font size of the collection. Multiples of 2" />
+            <flux:input type="number" wire:model="font_size" label="Font Size"
+                description="Font size of the collection." />
             <flux:button wire:click="updateCollection">Submit</flux:button>
         </div>
     </div>

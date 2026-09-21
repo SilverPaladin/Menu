@@ -18,7 +18,7 @@ new class extends Component {
     public $puff_count;
     #[Validate('nullable|string|max:255')]
     public $volume;
-    #[Validate('nullable|integer|min:10|max:80|multiple_of:2')]
+    #[Validate('nullable|integer|min:10|max:80')]
     public $font_size;
     public $current_image;
 

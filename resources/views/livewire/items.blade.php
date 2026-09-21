@@ -1,13 +1,15 @@
 <?php
 
-use Livewire\Component;
 use App\Models\Collection;
 use App\Models\Item;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Livewire\Attributes\Reactive;
+use Livewire\Component;
 
 new class extends Component {
     public $collection;
     public $items;
+    #[Reactive] 
     public $font_size = 30;
     public $showEditModal = false;
     public $newItemName = '';
@@ -119,7 +121,7 @@ new class extends Component {
 };
 ?>
 
-<div class="relative" wire:poll="refreshItems">
+<div class="relative">
     <!-- Main item list display -->
     <div class="flex flex-col gap-1 text-[{{ $collection->font_size }}px] text-center" x-data="{ showHover: false }"
         @mouseover="showHover = true" @mouseleave="showHover = false">
