@@ -43,7 +43,7 @@ new class extends Component {
         $column = Column::find($this->editingColumnId);
         $column->name = $this->columnName;
         $column->save();
-        
+
         $this->screen->refresh();
         $this->cancelEditing();
     }
@@ -68,7 +68,7 @@ new class extends Component {
         $column = Column::find($this->columnCollectionId);
         $column->collection_id = $this->selectedCollectionId;
         $column->save();
-        
+
         $this->screen->refresh();
         $this->cancelEditingCollection();
     }
@@ -116,109 +116,101 @@ new class extends Component {
 };
 ?>
 
-<div class="p-4">
-    <div class="w-1/4 mb-4">
-    <flux:input.group>
-        <flux:input.group.prefix>Screen Name:</flux:input.group.prefix>
-        <flux:input wire:model="name" placeholder="Screen Name" />
-        <flux:button icon="plus" wire:click="saveScreen">Save</flux:button>
-    </flux:input.group>
-    </div>    
-    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Column Name</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Collection</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+<div class="p-4 space-y-4 max-w-5xl">
+    <flux:breadcrumbs>
+        <flux:breadcrumbs.item :href="route('dashboard')" icon="home">Dashboard</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item :href="route('dashboard') . '#screens'">Screens</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item>{{ $screen->name }}</flux:breadcrumbs.item>
+    </flux:breadcrumbs>
+
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="w-full max-w-sm">
+            <flux:input.group>
+                <flux:input.group.prefix>Screen Name:</flux:input.group.prefix>
+                <flux:input wire:model="name" placeholder="Screen Name" />
+                <flux:button icon="check" wire:click="saveScreen">Save</flux:button>
+            </flux:input.group>
+        </div>
+        <flux:button size="sm" variant="ghost" icon="tv" href="{{ route('viewer', ['screen' => $screen->id]) }}" target="_blank">View on TV</flux:button>
+    </div>
+
+    <div class="w-full max-w-md">
+        <x-screen-preview :$screen />
+    </div>
+
+    <flux:card size="sm">
+        <flux:table>
+            <flux:table.columns>
+                <flux:table.column>ID</flux:table.column>
+                <flux:table.column>Column Name</flux:table.column>
+                <flux:table.column>Collection</flux:table.column>
+                <flux:table.column align="end">Actions</flux:table.column>
+            </flux:table.columns>
+
+            <flux:table.rows>
                 @foreach ($screen->columns as $column)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $column->id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                        @if ($editingColumnId === $column->id)
-                            <div class="flex items-center">
-                                <input type="text" wire:model="columnName" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full" />
-                                <button wire:click="saveColumnName" class="ml-2 inline-flex items-center px-2 py-1 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Save
-                                </button>
-                                <button wire:click="cancelEditing" class="ml-2 inline-flex items-center px-2 py-1 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Cancel
-                                </button>
-                            </div>
-                        @else
-                            {{ $column->name }}
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        @if ($editingCollectionId && $columnCollectionId === $column->id)
-                            <div class="flex items-center">
-                                <select wire:model="selectedCollectionId" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full">
+                    <flux:table.row :key="$column->id">
+                        <flux:table.cell>{{ $column->id }}</flux:table.cell>
+                        <flux:table.cell variant="strong">
+                            @if ($editingColumnId === $column->id)
+                                <div class="flex items-center gap-2">
+                                    <flux:input wire:model="columnName" size="sm" />
+                                    <flux:button size="sm" variant="primary" wire:click="saveColumnName">Save</flux:button>
+                                    <flux:button size="sm" variant="ghost" wire:click="cancelEditing">Cancel</flux:button>
+                                </div>
+                            @else
+                                {{ $column->name }}
+                            @endif
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            @if ($editingCollectionId && $columnCollectionId === $column->id)
+                                <div class="flex items-center gap-2">
+                                    <flux:select wire:model="selectedCollectionId" size="sm">
+                                        <option value="">None</option>
+                                        @foreach ($collections as $collection)
+                                            <option value="{{ $collection->id }}">{{ $collection->name }}</option>
+                                        @endforeach
+                                    </flux:select>
+                                    <flux:button size="sm" variant="primary" wire:click="saveColumnCollection">Save</flux:button>
+                                    <flux:button size="sm" variant="ghost" wire:click="cancelEditingCollection">Cancel</flux:button>
+                                </div>
+                            @else
+                                {{ $column->collection ? $column->collection->name : 'None' }}
+                            @endif
+                        </flux:table.cell>
+                        <flux:table.cell align="end">
+                            @if ($editingColumnId !== $column->id && !($editingCollectionId && $columnCollectionId === $column->id))
+                                <flux:button size="sm" variant="ghost" wire:click="startEditing({{ $column->id }})">Rename</flux:button>
+                                <flux:button size="sm" variant="ghost" wire:click="startEditingCollection({{ $column->id }})">Change Collection</flux:button>
+                                <flux:button size="sm" variant="ghost" icon="trash" wire:click="deleteColumn({{ $column->id }})" wire:confirm="Are you sure you want to delete this column?" />
+                            @endif
+                        </flux:table.cell>
+                    </flux:table.row>
+                @endforeach
+
+                <flux:table.row>
+                    <flux:table.cell colspan="4">
+                        @if ($showAddForm)
+                            <div class="flex items-center gap-2">
+                                <flux:input wire:model="newColumnName" placeholder="Enter column name" class="flex-1" />
+                                <flux:select wire:model="selectedCollectionId" placeholder="Collection (optional)" class="w-56">
                                     <option value="">None</option>
                                     @foreach ($collections as $collection)
                                         <option value="{{ $collection->id }}">{{ $collection->name }}</option>
                                     @endforeach
-                                </select>
-                                <button wire:click="saveColumnCollection" class="ml-2 inline-flex items-center px-2 py-1 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Save
-                                </button>
-                                <button wire:click="cancelEditingCollection" class="ml-2 inline-flex items-center px-2 py-1 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Cancel
-                                </button>
+                                </flux:select>
+                                <flux:button variant="primary" wire:click="addColumn">Add</flux:button>
+                                <flux:button variant="ghost" wire:click="cancelAdd">Cancel</flux:button>
                             </div>
+                            @error('newColumnName')
+                                <span class="text-red-500 text-xs">{{ $message }}</span>
+                            @enderror
                         @else
-                            {{ $column->collection ? $column->collection->name : 'None' }}
+                            <flux:button variant="primary" icon="plus" wire:click="showAddColumnForm">Add New Column</flux:button>
                         @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        @if ($editingColumnId !== $column->id && !($editingCollectionId && $columnCollectionId === $column->id))
-                            <button wire:click="startEditing({{ $column->id }})" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-3">
-                                Rename
-                            </button>
-                            <button wire:click="startEditingCollection({{ $column->id }})" class="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 mr-3">
-                                Change Collection
-                            </button>
-                            <button wire:click="deleteColumn({{ $column->id }})" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300" onclick="return confirm('Are you sure you want to delete this column?')">
-                                Delete
-                            </button>
-                        @endif
-                    </td>
-                </tr>
-                @endforeach
-                
-                <!-- Add Column Row -->
-                <tr class="bg-gray-50 dark:bg-gray-700">
-                    <td colspan="4" class="px-6 py-4">
-                        @if ($showAddForm)
-                            <div class="flex items-center">
-                                <input type="text" wire:model="newColumnName" placeholder="Enter column name" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full" />
-                                <button wire:click="addColumn" class="ml-2 inline-flex items-center px-3 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Add
-                                </button>
-                                <button wire:click="cancelAdd" class="ml-2 inline-flex items-center px-3 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Cancel
-                                </button>
-                            </div>
-                        @else
-                            <button wire:click="showAddColumnForm" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                </svg>
-                                Add New Column
-                            </button>
-                        @endif
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="mt-4">
-        <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-            Back to Dashboard
-        </a>
-    </div>
+                    </flux:table.cell>
+                </flux:table.row>
+            </flux:table.rows>
+        </flux:table>
+    </flux:card>
 </div>

@@ -31,7 +31,6 @@ new class extends Component {
     #[Validate('nullable|integer')]
     public $collection_id;
     public $collections;
-    public $showEditCollectionModal = false;
 
     public function mount(Column $column)
     {
@@ -66,7 +65,7 @@ new class extends Component {
         }
         $this->collection->refresh();
         $this->font_size = $this->collection->font_size;
-        $this->showEditCollectionModal = false;
+        Flux::modal('edit-collection-' . $this->column->id)->close();
     }
 
     public function increaseFontSize()
@@ -94,14 +93,16 @@ new class extends Component {
             'collection_id' => $this->collection_id,
         ]);
         $this->init($this->column);
-        $this->showEditCollectionModal = false;
+        Flux::modal('edit-collection-' . $this->column->id)->close();
     }
 }; ?>
 
-<div class="flex-1 h-full" x-data="{ showEditCollectionModal: $wire.entangle('showEditCollectionModal'), showHover: false }">
+<div class="flex-1 h-full" x-data="{ showHover: false }">
     <div class="flex flex-col gap-4 text-center h-full">
-        <img class="w-64 mx-auto" src="{{ Storage::url($collection->image) }}" alt="{{ $collection->name }}"
-            title="hover on bottom screen to show options" @click="showEditCollectionModal = true">
+        <flux:modal.trigger name="edit-collection-{{ $column->id }}">
+            <img class="w-64 mx-auto" src="{{ Storage::url($collection->image) }}" alt="{{ $collection->name }}"
+                title="hover on bottom screen to show options">
+        </flux:modal.trigger>
         <h2 class="text-4xl font-bold">{{ $collection->puff_count }}</h2>
         <h3 class="text-3xl font-bold">{!! $collection->volume !!}</h3>
         <div class="flex-1">
@@ -111,7 +112,9 @@ new class extends Component {
             <div x-show="showHover" class="gap-2 flex justify-center p-2 bg-green-800">
                 <flux:button wire:confirm="Are you sure you want to delete this column?" class="bottom-0"
                     wire:click="deleteColumn({{ $column->id }})">Delete Column {{ $column->name }}</flux:button>
-                <flux:button @click="showEditCollectionModal = true">Edit Collection</flux:button>
+                <flux:modal.trigger name="edit-collection-{{ $column->id }}">
+                    <flux:button>Edit Collection</flux:button>
+                </flux:modal.trigger>
                 <flux:button wire:click="decreaseFontSize">Decrease Font Size</flux:button>
                 <flux:button wire:click="increaseFontSize">Increase Font Size</flux:button>
             </div>
@@ -119,17 +122,19 @@ new class extends Component {
     </div>
 
     <!-- Collection Editing Modal -->
-    <div x-show="showEditCollectionModal" x-transition
-        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6 flex flex-col gap-4"
-            x-on:click.outside="showEditCollectionModal = false">
+    <flux:modal name="edit-collection-{{ $column->id }}" class="md:w-96">
+        <div class="space-y-6">
+            <flux:heading size="lg">Edit Collection</flux:heading>
+
             <flux:select wire:model="collection_id" label="Change Collection" description="Select Collection">
                 @foreach ($collections as $collection)
                     <option value="{{ $collection->id }}">{{ $collection->name }}</option>
                 @endforeach
             </flux:select>
             <flux:button wire:click="changeCollection">Change Collection</flux:button>
-            <h3 class="text-xl font-bold text-white mb-4">Edit Collection</h3>
+
+            <flux:separator />
+
             <flux:input type="file" wire:model="image" label="Header Image"
                 description="Select image to replace Column Header Image" />
             <!-- Image Preview -->
@@ -143,7 +148,10 @@ new class extends Component {
             <flux:input wire:model="volume" label="Volume" description="Volume of the device. eg: 20ml" />
             <flux:input type="number" wire:model="font_size" label="Font Size"
                 description="Font size of the collection." />
-            <flux:button wire:click="updateCollection">Submit</flux:button>
+            <div class="flex">
+                <flux:spacer />
+                <flux:button variant="primary" wire:click="updateCollection">Submit</flux:button>
+            </div>
         </div>
-    </div>
+    </flux:modal>
 </div>

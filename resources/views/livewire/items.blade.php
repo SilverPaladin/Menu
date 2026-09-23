@@ -9,7 +9,7 @@ use Livewire\Component;
 new class extends Component {
     public $collection;
     public $items;
-    #[Reactive] 
+    #[Reactive]
     public $font_size = 30;
     public $showEditModal = false;
     public $newItemName = '';
@@ -138,118 +138,66 @@ new class extends Component {
     </div>
 
     <flux:modal name="edit-items-{{ $collection->id }}" class="max-w-4xl">
-
         <div class="space-y-6">
-            <div>
-                <flux:heading>Edit Items for {{ $collection->name }}</flux:heading>
-            </div>
-            <!-- Add new item form -->
-            <div class="mb-6 bg-gray-700 p-4 rounded-lg">
-                <h4 class="text-xl font-semibold mb-3">Add New Item</h4>
-                <div class="flex gap-2">
-                    <input type="text" wire:model="newItemName"
-                        class="flex-1 px-3 py-2 bg-gray-900 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter item name">
-                    <button wire:click="addItem" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-                        Add Item
-                    </button>
-                </div>
-                @error('newItemName')
-                    <span class="text-red-500 mt-1">{{ $message }}</span>
-                @enderror
-            </div>
+            <flux:heading>Edit Items for {{ $collection->name }}</flux:heading>
 
-            <!-- Edit item form (shows when editing) -->
-            @if ($editItemId)
-                <div class="mb-6 bg-gray-700 p-4 rounded-lg">
-                    <h4 class="text-xl font-semibold mb-3">Edit Item</h4>
-                    <div class="flex gap-2">
-                        <input type="text" wire:model="editItemName"
-                            class="flex-1 px-3 py-2 bg-gray-900 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter item name">
-                        <button wire:click="updateItem"
-                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
-                            Update
-                        </button>
-                        <button wire:click="resetForm"
-                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">
-                            Cancel
-                        </button>
-                    </div>
-                    @error('editItemName')
-                        <span class="text-red-500 mt-1">{{ $message }}</span>
-                    @enderror
+            <!-- Add new item form -->
+            <flux:field>
+                <div class="flex items-center gap-2">
+                    <flux:input wire:model="newItemName" placeholder="Enter item name" class="flex-1" />
+                    <flux:button variant="primary" wire:click="addItem">Add Item</flux:button>
                 </div>
-            @endif
+                <flux:error name="newItemName" />
+            </flux:field>
 
             <!-- Items Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-gray-700 rounded-lg overflow-hidden">
-                    <thead class="bg-gray-600">
-                        <tr>
-                            <th class="py-3 px-4 text-left text-lg font-semibold">Name</th>
-                            <th class="py-3 px-4 text-center text-lg font-semibold">Status</th>
-                            <th class="py-3 px-4 text-right text-lg font-semibold">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($items as $item)
-                            <tr class="border-t border-gray-600">
-                                <td class="py-3 px-4 text-lg">{{ $item->name }}</td>
-                                <td class="py-3 px-4 text-center">
-                                    <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $item->active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $item->active ? 'Active' : 'Inactive' }}
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <div class="flex justify-end space-x-2">
-                                        <button wire:click="editItem({{ $item->id }})"
-                                            class="p-1 bg-blue-600 text-white rounded hover:bg-blue-700">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
-                                        <button wire:click="toggleActive({{ $item->id }})"
-                                            class="p-1 {{ $item->active ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700' }} text-white rounded">
-                                            @if ($item->active)
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            @else
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            @endif
-                                        </button>
-                                        <button wire:click="deleteItem({{ $item->id }})"
-                                            class="p-1 bg-red-600 text-white rounded hover:bg-red-700"
-                                            onclick="confirm('Are you sure you want to delete this item?') || event.stopImmediatePropagation()">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
+            <flux:table>
+                <flux:table.columns>
+                    <flux:table.column>Name</flux:table.column>
+
+                    <flux:table.column align="end">Actions</flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
+                    @forelse($items as $item)
+                        <flux:table.row :key="$item->id">
+                            @if ($editItemId === $item->id)
+                                <flux:table.cell variant="strong" colspan="2">
+                                    <div class="flex items-center gap-2">
+                                        <flux:input wire:model="editItemName" size="sm" />
+                                        <flux:button size="sm" variant="primary" wire:click="updateItem">Save
+                                        </flux:button>
+                                        <flux:button size="sm" variant="ghost" wire:click="resetForm">Cancel
+                                        </flux:button>
                                     </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" class="py-4 px-4 text-center text-lg">No items found</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                    <flux:error name="editItemName" />
+                                </flux:table.cell>
+                            @else
+                                <flux:table.cell variant="strong">
+                                    {{ $item->name }}
+                                </flux:table.cell>
+                            @endif
+
+                            <flux:table.cell align="end">
+                                @if ($editItemId !== $item->id)
+                                    <flux:toggle size="sm" icon="eye" color="green" :checked="$item->active"
+                                        on:label="Active" off:label="Hidden"
+                                        wire:click="toggleActive({{ $item->id }})" />
+                                    <flux:button size="sm" variant="ghost"
+                                        wire:click="editItem({{ $item->id }})">Edit</flux:button>
+                                    <flux:button size="sm" variant="ghost" icon="trash"
+                                        wire:click="deleteItem({{ $item->id }})"
+                                        wire:confirm="Delete item &quot;{{ $item->name }}&quot;?" />
+                                @endif
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="2" class="text-center">No items found</flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
+                </flux:table.rows>
+            </flux:table>
         </div>
     </flux:modal>
 </div>

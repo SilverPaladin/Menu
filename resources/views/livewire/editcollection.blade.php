@@ -2,6 +2,7 @@
 
 use App\Models\Collection;
 use App\Models\Item;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
@@ -38,6 +39,14 @@ new class extends Component {
         $this->current_image = $collection->image;
 
         $this->loadItems();
+    }
+
+    public function with()
+    {
+        return [
+            'usedOn' => $this->collection->columns()->with('screen')->get()
+                ->pluck('screen.name')->filter()->unique()->values(),
+        ];
     }
 
     public function loadItems()
@@ -128,158 +137,147 @@ new class extends Component {
 
     public function deleteCollection()
     {
-        Storage::delete($this->current_image);
+        if ($this->current_image) {
+            Storage::disk('public')->delete($this->current_image);
+        }
         $this->collection->delete();
-        $this->redirect('/dashboard');
+        $this->redirectRoute('dashboard');
     }
 }; ?>
 
-<div class="p-4">
-    <h2 class="text-2xl font-bold mb-6">Edit Collection</h2>
+<div class="p-4 space-y-4 max-w-5xl">
+    <flux:breadcrumbs>
+        <flux:breadcrumbs.item :href="route('dashboard')" icon="home">Dashboard</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item :href="route('dashboard') . '#collections'">Collections</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item>{{ $collection->name }}</flux:breadcrumbs.item>
+    </flux:breadcrumbs>
+
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <flux:heading size="xl">Edit Collection</flux:heading>
+        <div class="flex flex-wrap gap-1">
+            @forelse ($usedOn as $screenName)
+                <flux:badge size="sm" color="zinc" icon="tv">On {{ $screenName }}</flux:badge>
+            @empty
+                <flux:badge size="sm">Not on any screen</flux:badge>
+            @endforelse
+        </div>
+    </div>
 
     <!-- Collection Details Form -->
-    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
-        <h3 class="text-lg font-medium mb-4 dark:text-white">Collection Details</h3>
+    <flux:card class="space-y-6">
+        <flux:heading size="lg">Collection Details</flux:heading>
 
         @if (session('message'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-                <p>{{ session('message') }}</p>
-            </div>
+            <flux:callout variant="success" icon="check-circle" :text="session('message')" />
         @endif
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <div class="mb-4">
-                    <flux:input type="text" label="Name" wire:model="name" />
-                </div>
-
-                <div class="mb-4">
-                    <flux:input type="text" label="Puff Count" wire:model="puff_count" />
-                </div>
-
-                <div class="mb-4">
-                    <flux:input type="text" label="Volume" wire:model="volume" />
-                </div>
-
-                <div class="mb-4">
-                    <flux:input type="number" label="Font Size" wire:model="font_size" min="8" max="72" />
-                </div>
+            <div class="space-y-4">
+                <flux:input type="text" label="Name" wire:model="name" />
+                <flux:input type="text" label="Puff Count" wire:model="puff_count" />
+                <flux:input type="text" label="Volume" wire:model="volume" />
+                <flux:input type="number" label="Font Size" wire:model="font_size" min="8" max="72" />
             </div>
 
             <div>
-                <div class="mb-4">
-                    <flux:input type="file" label="Header Image" wire:model="image" accept="image/*" />
+                <flux:input type="file" label="Header Image" wire:model="image" accept="image/*" />
 
-                    <div wire:loading wire:target="image" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                        Uploading...
-                    </div>
-
-                    @if ($image)
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Preview:</p>
-                            <img src="{{ $image->temporaryUrl() }}"
-                                class="mt-1 h-32 object-contain bg-gray-100 dark:bg-gray-700 rounded-md">
-                        </div>
-                    @elseif ($current_image)
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Current Image:</p>
-                            <img src="{{ Storage::url($current_image) }}"
-                                class="mt-1 h-32 object-contain bg-gray-100 dark:bg-gray-700 rounded-md">
-                        </div>
-                    @endif
+                <div wire:loading wire:target="image" class="mt-2">
+                    <flux:text size="sm">Uploading...</flux:text>
                 </div>
+
+                @if ($image)
+                    <div class="mt-2">
+                        <flux:text size="sm">Preview:</flux:text>
+                        <img src="{{ $image->temporaryUrl() }}"
+                            class="mt-1 h-32 object-contain bg-zinc-100 dark:bg-zinc-800 rounded-md">
+                    </div>
+                @elseif ($current_image)
+                    <div class="mt-2">
+                        <flux:text size="sm">Current Image:</flux:text>
+                        <img src="{{ Storage::url($current_image) }}"
+                            class="mt-1 h-32 object-contain bg-zinc-100 dark:bg-zinc-800 rounded-md">
+                    </div>
+                @endif
             </div>
         </div>
 
-        <div class="flex justify-end mt-4 gap-4">
+        <div class="flex justify-end gap-4">
             <flux:button variant="primary" wire:click="saveCollection">Save Collection</flux:button>
             <flux:modal.trigger name="delete-collection">
                 <flux:button variant="danger">Delete Collection</flux:button>
             </flux:modal.trigger>
         </div>
-    </div>
+    </flux:card>
 
     <!-- Items Management -->
-    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-        <h3 class="text-lg font-medium mb-4 dark:text-white">Manage Items</h3>
+    <flux:card class="space-y-6">
+        <flux:heading size="lg">Manage Items</flux:heading>
 
         <!-- Add New Item Form -->
-        <div class="mb-6">
-            <div class="flex items-center">
-                <flux:input type="text" wire:model="newItemName" placeholder="Enter new item name" />
-                <flux:button variant="primary" wire:click="addItem" class="ml-2">Add Item</flux:button>
+        <flux:field>
+            <div class="flex items-center gap-2">
+                <flux:input type="text" wire:model="newItemName" placeholder="Enter new item name" class="flex-1" />
+                <flux:button variant="primary" wire:click="addItem">Add Item</flux:button>
             </div>
-            @error('newItemName')
-                <span class="text-red-500 text-xs">{{ $message }}</span>
-            @enderror
-        </div>
+            <flux:error name="newItemName" />
+        </flux:field>
 
         <!-- Items Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Name</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Status</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    @forelse ($items as $item)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                @if ($editItemId === $item->id)
-                                    <div class="flex items-center">
-                                        <flux:input type="text" wire:model="editItemName" />
-                                        <flux:button variant="primary" wire:click="saveItem" class="ml-2">Save
-                                        </flux:button>
-                                        <flux:button variant="ghost" wire:click="cancelEditItem" class="ml-2">Cancel
-                                        </flux:button>
-                                    </div>
-                                @else
-                                    {{ $item->name }}
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                <flux:button variant="{{ $item->active ? 'primary' : 'subtle' }}"
-                                    wire:click="toggleItemStatus({{ $item->id }})">
-                                    {{ $item->active ? 'Active' : 'Hidden' }}
-                                </flux:button>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                @if ($editItemId !== $item->id)
-                                    <flux:button variant="ghost" wire:click="startEditItem({{ $item->id }})"
-                                        class="mr-3">Edit</flux:button>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3"
-                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
-                                No items found. Add your first item above.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
+        <flux:table>
+            <flux:table.columns>
+                <flux:table.column>Name</flux:table.column>
+                <flux:table.column>Status</flux:table.column>
+                <flux:table.column align="end">Actions</flux:table.column>
+            </flux:table.columns>
 
-    <div class="mt-6">
-        <flux:button variant="ghost" href="{{ route('dashboard') }}">Back to Dashboard</flux:button>
-    </div>
+            <flux:table.rows>
+                @forelse ($items as $item)
+                    <flux:table.row :key="$item->id">
+                        <flux:table.cell variant="strong">
+                            @if ($editItemId === $item->id)
+                                <div class="flex items-center gap-2">
+                                    <flux:input type="text" wire:model="editItemName" size="sm" />
+                                    <flux:button size="sm" variant="primary" wire:click="saveItem">Save</flux:button>
+                                    <flux:button size="sm" variant="ghost" wire:click="cancelEditItem">Cancel</flux:button>
+                                </div>
+                            @else
+                                {{ $item->name }}
+                            @endif
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            <flux:toggle size="sm" icon="eye" color="green" :checked="$item->active" on:label="Active" off:label="Hidden"
+                                wire:click="toggleItemStatus({{ $item->id }})" />
+                        </flux:table.cell>
+                        <flux:table.cell align="end">
+                            @if ($editItemId !== $item->id)
+                                <flux:button size="sm" variant="ghost" wire:click="startEditItem({{ $item->id }})">Edit</flux:button>
+                                <flux:button size="sm" variant="ghost" icon="trash" wire:click="deleteItem({{ $item->id }})"
+                                    wire:confirm="Delete item &quot;{{ $item->name }}&quot;?" />
+                            @endif
+                        </flux:table.cell>
+                    </flux:table.row>
+                @empty
+                    <flux:table.row>
+                        <flux:table.cell colspan="3" class="text-center">
+                            No items found. Add your first item above.
+                        </flux:table.cell>
+                    </flux:table.row>
+                @endforelse
+            </flux:table.rows>
+        </flux:table>
+    </flux:card>
+
     <flux:modal name="delete-collection" class="md:w-96">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">Delete Collection</flux:heading>
-                <flux:text class="mt-2">Are you sure you wish to delete this collection?</flux:text>
+                <flux:text class="mt-2">
+                    Are you sure you wish to delete this collection?
+                    @if ($usedOn->isNotEmpty())
+                        It is currently used on: {{ $usedOn->implode(', ') }}. Those columns will show as empty.
+                    @endif
+                </flux:text>
             </div>
             <div class="flex">
                 <flux:spacer />

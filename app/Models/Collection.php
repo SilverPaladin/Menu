@@ -9,11 +9,7 @@ class Collection extends Model
 {
     protected $guarded = [];
 
-    protected $casts = [
-        'items' => 'array',
-    ];
-
-    public function column(): hasMany
+    public function columns(): hasMany
     {
         return $this->hasMany(Column::class);
     }
